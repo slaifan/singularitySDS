@@ -65,7 +65,12 @@ def reward(env_obs, env_reward):
     distance travelled. Your model will likely require a more
     sophisticated reward function
     """
-    return env_reward
+
+    observations = observation(env_obs) # get our observations
+    angle_multiplier = np.cos(observations['angle_error'])                                ## ASSERT nparray WITH ONE ELEMENT
+    dist_center_multiplier = 1/(np.absolute(observations['distance_from_center']) + 0.01) ## ASSERT nparray WITH ONE ELEMENT
+
+    return env_reward * angle_multiplier * dist_center_multiplier ## ASSERT return type is same as type of env_reward alone
 
 def action(model_action):
     """
@@ -74,7 +79,12 @@ def action(model_action):
     The built in action space may not be suited for all approaches, for
     example you may like to use a discrete action space.
     """
+    
     throttle, brake, steering = model_action
+    throttle = round(throttle, 4) ## ASSERT FLOAT (4 decimal points)
+    brake = round(brake, 4)       ## ASSERT FLOAT (4 decimal points)
+    steering = round(steering, 4) ## ASSERT FLOAT (4 decimal points)
+
     return np.array([throttle, brake, steering * 45])
 
 
@@ -130,3 +140,13 @@ class Policy():
     def act(self, observation):
         action, _state = self._model.forward(observation, None, None)
         return action
+
+'''
+##TODO:
+ ASSERTIONS FOR ALL THE VARIABLES WE USED (SHOULD BE AS COMMENTED)
+ UNDERSTAND OTHER CARS GRID
+ FIX FOR OTHER CARS 
+ TRAIN NEW MODEL
+
+
+'''
